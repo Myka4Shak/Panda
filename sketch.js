@@ -1,9 +1,6 @@
 var font, bg, mic;
 var texts = []
-// זה אני לא מצליחה להסגר על פלטה
-//var particle_colors = [("#FFFFFF"), ("#900C3F"), ("#D20039"), ("#FF0733"), ("#FEC10F")];
-//var particle_colors = [("#FFBE0B"), ("#FB5607"), ("#FF006E"), ("#8338EC"), ("#3A86FF")];
-var particle_colors = [("#03EEF2"), ("#006BA6"), ("#FFBC42"), ("#0496FF"), ("#F00104")];
+var particle_colors = [("#F681844"), ("#900C3F"), ("#D20039"), ("#FF0733"), ("#FEC10F")];
 
 function preload() {
     font = loadFont("f.otf");
@@ -12,14 +9,17 @@ function preload() {
 function setup() {
     createCanvas(windowWidth, windowHeight);
 
-    // רקע
+    // create the background object
     bg = new particleBackground(particle_colors);
 
-    // מיקרופון
+    // Create an Audio input
     mic = new p5.AudioIn();
+
+    // start the Audio Input.
+    // By default, it does not .connect() (to the computer speakers)
     mic.start();
 
-    // טקסט
+    // Create the texts
     texts.push(
         new glitchText("הבוטל", width / 2 - 350, height / 2, 150, false),
         new glitchText("שבתשמ", width / 2, height / 2, 150),
@@ -29,14 +29,14 @@ function setup() {
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight)
 
-    // מיקום הטקסט
+    // positions of the texts
     var positions = [
         [width / 2 - 350, height / 2],
         [width / 2, height / 2],
         [width / 2 + 300, height / 2]
     ]
 
-    // עדכון המיקום אחרי שינוי גודל החלון
+    // update the text positions after resize
     for (var i = 0; i < positions.length; i++) {
         texts[i].x = positions[i][0]
         texts[i].y = positions[i][1]
@@ -44,9 +44,9 @@ function windowResized() {
 }
 
 function draw() {
-    // רקע
+    // draw the background
     bg.draw()
-        // טקסט
+        // draw the texts
     for (var t of texts) {
         t.draw();
     }
@@ -66,7 +66,7 @@ class particleBackground {
 
         this.colors = colorPalette.map(x => color(x));
 
-        //שינוי אוטומטי
+        //auto change
         this.changeDuration = 3000;
         this.lastChange = 0;
     }
@@ -76,7 +76,7 @@ class particleBackground {
         textAlign(CENTER, CENTER);
 
         /*
-        //בדיקה
+        //DEBUG
         textSize(20);
         noStroke();
         fill(255);
@@ -85,15 +85,14 @@ class particleBackground {
         text(this.variation, this.centerX, this.centerY-10);
         text(length, this.centerX, this.centerY+10);
         */
-        
 
-        // הוספת החלקיקים בטריגר של לחיצה או קול
+        // Make the adding sound triggered
         //if (mouseIsPressed) {
         if (mic.getLevel() > 0.15) {
             for (let i = 0; i < 20; i++) {
                 var radius = width / 8;
 
-                let x = width / 2 + cos(frameCount / 10) * radius +   random(-100, 100);
+                let x = width / 2 + cos(frameCount / 10) * radius + random(-100, 100);
                 let y = height / 2 + sin(frameCount / 10) * radius + random(-100, 100);
 
                 var blob = {
@@ -110,25 +109,22 @@ class particleBackground {
             }
         }
 
+
         var length = this.blobs.length;
-        
-        // שיהיה כתוב לצעוק?
-        /*
         if (length == 0 && false) {
             background("#1a0633");
             noStroke();
             fill(255);
             textSize(40);
-            text("Scream", this.centerX, this.centerY);
+            text("Scream to emmit particles", this.centerX, this.centerY);
             return;
         }
-        */
 
         noStroke();
         fill(26, 6, 51, 10);
         rect(0, 0, width, height);
 
-        //שינוי אוטומטי
+        //auto change
         let time = millis();
         if (time - this.lastChange > this.changeDuration) {
             this.lastChange = time;
@@ -250,15 +246,15 @@ class glitchText {
     draw() {
         push();
 
-        //הכנה
+        //preparation
         translate(this.x, this.y)
         textSize(this.s)
 
         textFont(font)
         textAlign(CENTER, CENTER)
 
-        // גליצ' של המילה משתבש עם סטייה
-        var n = (mic.getLevel() + noise(frameCount / 10) / 2) * 20
+        // draw the glitch texts with offset
+        var n = (mic.getLevel() + noise(frameCount / 20) / 2) * 20
         if (this.enab) {
             fill(0, 255, 255, 92)
             text(this.text, n, n)
@@ -266,7 +262,7 @@ class glitchText {
             text(this.text, -n, -n)
         }
 
-        // טקסט לבן
+        //draw the white text
         noStroke()
         fill("white")
         text(this.text, 0, 0)
