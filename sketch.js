@@ -87,8 +87,8 @@ class particleBackground {
         */
 
         // Make the adding sound triggered
-        //if (mouseIsPressed) {
-        if (mic.getLevel() > 0.15) {
+        if (mouseIsPressed) {
+        //if (mic.getLevel() > 0.15) {
             for (let i = 0; i < 20; i++) {
                 var radius = width / 8;
 
